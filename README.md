@@ -58,5 +58,4 @@ Run isolated UI/model checks with:
 Also supported: `--dpi=120` and `--dpi=144`. Self-tests do not attach to Rain.
 Results: [app/verification](app/verification).
 
-The existing Orbit history and older versions should remain in the repository
-when this commit is applied to its current default branch.
+This repository starts with Frontier Helper 0.10.0.
