@@ -23,22 +23,4 @@ next to it. Open Rain normally, enter the city, then click **START**.
 Profile values use the existing schema-1 JSON format. Local user profiles and
 session logs are not included in this repository snapshot.
 
-## Verification
-
-- 84 checks passed at each of 100%, 125% and 150% DPI: 252 total.
-- JSON profile tests passed for float round trips, Unicode, truncation and
-  invalid schema/range rejection.
-- Own-scene renders inspected at all three scales and the minimum window size.
-- DWM nonclient rendering disabled to avoid the previous white window frame.
-- In-game acceptance was not performed for this version in this run.
-
-Run isolated UI/model checks with:
-
-```powershell
-.\app\FrontierHelper.exe --self-test --dpi=96
-```
-
-Also supported: `--dpi=120` and `--dpi=144`. Self-tests do not attach to Rain.
-Results: [app/verification](app/verification).
-
 This repository starts with Frontier Helper 0.10.0.
