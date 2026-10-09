@@ -1,0 +1,9 @@
+app/.build-cache/
+app/logs/
+app/setups/
+app/test-artifacts/
+app/qa-*/
+app/*.pdb
+app/preview-*.bmp
+app/preview-*.png
+app/qa-*.txt
