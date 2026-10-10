@@ -376,7 +376,7 @@ static void paint(HDC dc){
  fill(box(0,0,width,height),bg);fill(box(0,0,width,56),panel);fill(box(0,56,80,height-56),panel);
  helper_canvas_line(0,55.5f,(float)width,55.5f,border);helper_canvas_line(79.5f,56,79.5f,(float)height,border);
  txt(box(24,6,40,44),L"Z",font_logo,accent,0);
- txt(box(width-330,0,178,56),L"RAIN EDITION  /  0.10.0",font_brand,muted,1);
+ txt(box(width-330,0,178,56),L"RAIN EDITION  /  0.10.1",font_brand,muted,1);
  for(int i=0;i<3;i++){Box b=box(width-138+i*46,0,46,56);if(hover==MINIMIZE+i)fill(b,i==2?RGB(104,36,31):high);
   int cx=b.x+23,cy=28;
   if(i==0)stroke((float)cx-5,(float)cy,(float)cx+5,(float)cy,muted);
@@ -646,7 +646,7 @@ int WINAPI WinMain(HINSTANCE instance,HINSTANCE previous,char *args,int show){
  cls.hCursor=LoadCursorW(NULL,(LPCWSTR)IDC_ARROW);cls.lpszClassName=L"FrontierHelperCompactWindow";cls.hIcon=cls.hIconSm=app_icon;if(!RegisterClassExW(&cls))return 1;
  int w=px(1040),h=px(780);if(!self_test){MONITORINFO mi={0};mi.cbSize=sizeof(mi);if(GetMonitorInfoW(MonitorFromPoint((POINT){0,0},MONITOR_DEFAULTTOPRIMARY),&mi)){
   if(w>mi.rcWork.right-mi.rcWork.left-32)w=mi.rcWork.right-mi.rcWork.left-32;if(h>mi.rcWork.bottom-mi.rcWork.top-32)h=mi.rcWork.bottom-mi.rcWork.top-32;}}
- window=CreateWindowExW(WS_EX_APPWINDOW,cls.lpszClassName,L"Frontier Helper — Rain 0.10.0",WS_POPUP|WS_THICKFRAME|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_SYSMENU|WS_CLIPCHILDREN,
+ window=CreateWindowExW(WS_EX_APPWINDOW,cls.lpszClassName,L"Frontier Helper — Rain 0.10.1",WS_POPUP|WS_THICKFRAME|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_SYSMENU|WS_CLIPCHILDREN,
   (GetSystemMetrics(SM_CXSCREEN)-w)/2,(GetSystemMetrics(SM_CYSCREEN)-h)/2,w,h,NULL,NULL,instance,NULL);if(!window)return 1;
  configure_frame(window);editor=CreateWindowExW(0,L"EDIT",L"",WS_CHILD|ES_AUTOHSCROLL|ES_RIGHT,0,0,0,0,window,(HMENU)101,instance,NULL);if(!editor)return 1;
  editor_original=(WNDPROC)SetWindowLongPtrW(editor,GWLP_WNDPROC,(LONG_PTR)editor_proc);

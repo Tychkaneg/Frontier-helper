@@ -1,11 +1,20 @@
-FRONTIER HELPER 0.10.0 — RAIN EDITION
+FRONTIER HELPER 0.10.1 — RAIN EDITION
 
 Run FrontierHelper.exe. No installation is required.
 Keep FrontierOrbitRain08.dll next to the executable.
 
 Open Rain HD normally and enter the city. Click START to connect.
 STOP restores the stock camera. Closing Helper also disables its camera.
-The supported Rain engine remains 20260929141936_cb31ac5 (HD).
+RAIN UPDATE COMPATIBILITY
+Helper checks the loaded HD engine instead of requiring one client.dll hash.
+Updates with the same verified camera/collision instructions and address
+layout are accepted automatically. SHA256 is logged for diagnostics only.
+Both Helper and its camera DLL check 13 exact code blocks, including address
+operands, and 9 mapped-data ranges before installing the camera hook.
+The hook still requires the original D3DXMatrixLookAtRH import.
+Changed instructions, moved addresses or inaccessible engine memory are
+rejected. This does not relocate or adapt arbitrary future engine changes.
+Tested in Rain HD 20261009170842_c176749 on 2026-10-10.
 
 CAMERA
 Drag a slider or click its number to enter an exact value.
@@ -40,8 +49,15 @@ Ctrl+S: Save profile. Ctrl+R: restore defaults.
 VERIFICATION
 Native UI model and rendering checks passed at 100%, 125% and 150% DPI.
 84 checks at each scale, plus JSON profile codec tests.
-The Rain DLL is byte-identical to the previous working version.
-Live in-game acceptance has not been tested in this run.
+Compatibility tests passed for a valid engine layout and rejection of
+changed code/address operands, non-executable code, inaccessible data and
+an incorrect engine base. Camera-core tests include 5,000 geometry cases.
+Live checks passed for engine verification, injection, channel ownership,
+settings, enable/status/disable. The user confirmed the updated camera
+works in Rain; the attach journal also recorded active camera/settings.
+The UI/DPI results above are from 0.10.0; 0.10.1 changes compatibility and
+the displayed version, with the existing UI controls retained.
 
-Source and build.ps1 are available in the local development folder.
-The portable ZIP includes only runtime files, this README and profiles.
+Source, build.ps1 and test-compat.ps1 are available in the GitHub repository.
+The portable ZIP includes runtime files, this README and a hash manifest.
+Your existing setups folder can be kept when updating the EXE and DLL.

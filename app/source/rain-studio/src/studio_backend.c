@@ -6,8 +6,7 @@
 #include <stdarg.h>
 #include <wchar.h>
 #include <shlobj.h>
-#include "../fork-0.7/source/engine_profiles.h"
-#include "../fork-0.7/source/remote_engine_guards.h"
+#include "../../src/engine_compat.h"
 
 typedef struct {
  StudioBackend *ui;
@@ -67,12 +66,13 @@ static int hash_file(const wchar_t *path,BYTE digest[32]) {
 cleanup:
  if(hash)CryptDestroyHash(hash);if(provider)CryptReleaseContext(provider,0);CloseHandle(file);return result;
 }
-static int identify(DWORD pid,wchar_t *exe,uint64_t *created) {
+static int identify(StudioBackend *ui,DWORD pid,wchar_t *exe,uint64_t *created) {
  HANDLE process=OpenProcess(PROCESS_QUERY_INFORMATION|PROCESS_VM_READ,FALSE,pid);if(!process)return 0;
- DWORD length=MAX_PATH;BOOL self_wow=FALSE,game_wow=FALSE;
+ DWORD length=MAX_PATH;BOOL self_wow=FALSE,game_wow=FALSE;unsigned failure=0;
  int valid=QueryFullProcessImageNameW(process,0,exe,&length)&&
   IsWow64Process(GetCurrentProcess(),&self_wow)&&IsWow64Process(process,&game_wow)&&
-  (!self_wow||game_wow)&&remote_engine_guards(process,(BYTE*)0x10000000);
+  (!self_wow||game_wow)&&frontier_engine_compatible(process,frontier_engine_base,&failure);
+ if(failure)studio_log(ui,2,L"[compat] PID %lu is incompatible (check %u). Camera code/address layout changed; no core loaded.",pid,failure);
  FILETIME c,e,k,u;
  if(valid&&GetProcessTimes(process,&c,&e,&k,&u))*created=((uint64_t)c.dwHighDateTime<<32)|c.dwLowDateTime;
  else valid=0;
@@ -81,7 +81,7 @@ static int identify(DWORD pid,wchar_t *exe,uint64_t *created) {
 }
 static DWORD find_game(StudioBackend *ui,DWORD requested,const wchar_t *selected,wchar_t *exe,uint64_t *created) {
  if(requested) {
-  if(identify(requested,exe,created))return requested;
+  if(identify(ui,requested,exe,created))return requested;
   studio_log(ui,2,L"[error] PID %lu is not the supported Rain HD client.",requested);return 0;
  }
  HANDLE snapshot=CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
@@ -90,7 +90,7 @@ static DWORD find_game(StudioBackend *ui,DWORD requested,const wchar_t *selected
  if(Process32FirstW(snapshot,&e)){do {
   if(!_wcsicmp(e.szExeFile,L"client.exe")) {
    wchar_t path[MAX_PATH]={0};uint64_t time=0;
-   if(identify(e.th32ProcessID,path,&time)&&(!*selected||!_wcsicmp(selected,path))) {
+   if(identify(ui,e.th32ProcessID,path,&time)&&(!*selected||!_wcsicmp(selected,path))) {
     pid=e.th32ProcessID;wcscpy(exe,path);*created=time;count++;
    }
   }
@@ -194,11 +194,13 @@ static int connect_game(Connection *c,DWORD requested,const wchar_t *selected,co
  c->pid=find_game(c->ui,requested,selected,exe,&c->created);if(!c->pid)return 0;
  wchar_t identity[MAX_PATH];wcscpy(identity,exe);wchar_t *slash=wcsrchr(identity,L'\\');
  if(!slash)return 0;wcscpy(slash+1,L"client.dll");BYTE digest[32];
- studio_log(c->ui,0,L"[verify] Checking client.dll SHA256 and 13 engine guards...");
- if(!hash_file(identity,digest)||memcmp(digest,engine_profiles[0].sha256,32)) {
-  studio_log(c->ui,2,L"[error] client.dll differs from the supported Rain 20260929141936 build.");return 0;
+ studio_log(c->ui,0,L"[verify] Automatically checking loaded Rain HD code, operands and mapped data...");
+ if(!hash_file(identity,digest)) {
+  studio_log(c->ui,2,L"[error] Cannot read client.dll identity (Windows %lu).",GetLastError());return 0;
  }
- studio_log(c->ui,1,L"[verified] Rain HD / PID %lu / 13 of 13 code guards.",c->pid);
+ wchar_t fingerprint[65];for(unsigned i=0;i<32;i++)swprintf(fingerprint+i*2,3,L"%02x",(unsigned)digest[i]);
+ studio_log(c->ui,0,L"[identity] client.dll SHA256 %ls (diagnostic, no build allowlist).",fingerprint);
+ studio_log(c->ui,1,L"[verified] Compatible Rain HD / PID %lu / 13 exact code+operand checks / 9 mapped-data checks.",c->pid);
  if(!inject(c,core))return 0;
  /* The pipe is the only control channel. Do not keep VM_WRITE/CREATE_THREAD
     rights to a protected game for the lifetime of the external GUI. */
@@ -292,7 +294,7 @@ static DWORD WINAPI worker(void *opaque) {
 int studio_backend_start(StudioBackend *b,HWND window,const wchar_t *core) {
  memset(b,0,sizeof(*b));InitializeSRWLock(&b->lock);InitializeSRWLock(&b->log_lock);log_path(b);b->settings=camera_defaults();
  b->window=window;wcscpy(b->core_path,core);b->settings_serial=1;
- studio_log(b,0,L"[version] Frontier Helper 0.10.0 / Compact GUI / Rain core from Studio 0.8.1.");
+ studio_log(b,0,L"[version] Frontier Helper 0.10.1 / Compact GUI / Rain core from Studio 0.8.1.");
  studio_log(b,0,*b->log_path?L"[log] Persistent attach journal enabled.":L"[log] Persistent journal could not be created.");
  b->thread=CreateThread(NULL,0,worker,b,0,NULL);return b->thread!=NULL;
 }

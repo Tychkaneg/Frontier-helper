@@ -1,0 +1,38 @@
+{
+  "version": "0.10.1",
+  "date": "2026-10-10",
+  "rain_build": "20261009170842_c176749",
+  "client_dll_sha256": "69b0c000f550d95e7f8d229747be5d179dfee17bc8ceab356e626a27172865f7",
+  "compatibility": {
+    "exact_code_and_operand_blocks": 13,
+    "mapped_data_ranges": 9,
+    "file_hash_allowlist": false,
+    "arbitrary_engine_relocation": false
+  },
+  "tests": {
+    "valid_layout": "pass",
+    "each_of_13_changed_blocks": "rejected",
+    "changed_absolute_address_operand": "rejected",
+    "non_executable_code": "rejected",
+    "inaccessible_data": "rejected",
+    "wrong_base": "rejected",
+    "restored_layout": "pass",
+    "camera_core": "pass",
+    "geometry_cases": 5000
+  },
+  "live": {
+    "engine_verification": "pass",
+    "injection_and_identity": "pass",
+    "pipe_owner_and_handshake": "pass",
+    "settings_enable_status_disable": "pass",
+    "camera_and_settings_active_in_journal": true,
+    "in_game_user_acceptance": "confirmed"
+  },
+  "ui_dpi_verification": "Inherited from 0.10.0; UI controls unchanged apart from version text.",
+  "release_module_equivalence": {
+    "text_section": "identical to in-game tested module",
+    "rdata_section": "identical",
+    "data_section": "identical"
+  },
+  "release_build_and_test_script": "passed on Windows with Zig 0.13.0; live read-only engine check passed"
+}

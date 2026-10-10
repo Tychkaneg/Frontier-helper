@@ -7,3 +7,6 @@ app/*.pdb
 app/preview-*.bmp
 app/preview-*.png
 app/qa-*.txt
+
+app/compatibility-test-output/
+app/*.lib

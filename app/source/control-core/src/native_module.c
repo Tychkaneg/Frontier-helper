@@ -4,7 +4,11 @@
 #include "control_win.h"
 #include <xinput.h>
 #include <stdio.h>
+#ifdef FRONTIER_RAIN
+#include "../../src/engine_compat.h"
+#else
 #include "../../src/engine_guards.h"
+#endif
 
 typedef float *(WINAPI *LookAt)(float *,const float *,const float *,const float *);
 typedef DWORD (WINAPI *PadRead)(DWORD,XINPUT_STATE *);
@@ -136,12 +140,16 @@ static float *WINAPI hooked_lookat(float *out,const float *eye,const float *targ
  return original(out,eye,target,up);
 }
 static int checked_guards(BYTE *base) {
+#ifdef FRONTIER_RAIN
+ return frontier_engine_compatible(GetCurrentProcess(),(uintptr_t)base,NULL);
+#else
  static const uintptr_t offsets[]={12250640,12251904,12250464,8524368,8519312,
   9244432,9243456,9217888,20874464,9223728,9220096,9204928,0x8202a0};
  BYTE bytes[64];
  for(unsigned i=0;i<sizeof(offsets)/sizeof(offsets[0]);i++)
   if(!safe_read((uintptr_t)base+offsets[i],bytes,sizeof(bytes)))return 0;
  return engine_guards(base);
+#endif
 }
 __declspec(dllexport) DWORD WINAPI OrbitControlVersion(void *unused) {(void)unused;return CONTROL_VERSION;}
 __declspec(dllexport) DWORD WINAPI OrbitStatus(void *unused) {
