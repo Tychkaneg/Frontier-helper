@@ -109,6 +109,18 @@ Hypnocatrice and Rathian. This is separate from the automated fixture checks.
 See [1.0.1 verification](app/verification/monster-target-1.0.1.json) and
 [previous trigger verification](app/verification/triggers-1.0.0.json).
 
-## License
+## License and Capcom rights
 
-Licensed under the [MIT License](LICENSE).
+The [MIT License](LICENSE) applies to original Frontier Helper code and
+project documentation to the extent its authors hold the relevant rights.
+It does not license Monster Hunter Frontier Z, Capcom's game code or assets,
+trademarks, or material belonging to other authors.
+
+Frontier Helper is an independent fan-made mod. No affiliation with Capcom,
+endorsement, or permission from Capcom is claimed. Compatibility headers
+contain short engine byte signatures used to check the game's layout; those
+are not presented as Capcom material released under MIT.
+
+See [rights and source provenance](NOTICE.md). MIT licensing of the mod does
+not establish permission to modify or reverse-engineer the game, and the
+technical verification reports are not a legal clearance of the project.
