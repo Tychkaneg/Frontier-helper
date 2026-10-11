@@ -1,0 +1,55 @@
+{
+  "version": "1.0.1",
+  "verified_at": "2026-10-11T11:55:28.246958+00:00",
+  "helper_original_sha256": "fbcf5fa614738a818c7ac3c4ebffa873fdcc2784080a2e82d60a890ffdee8cdf",
+  "helper_release_sha256": "8aaa804bddaa7a011136716214d23d0f31ac7d20fcda8d4a341bf8402a6b76ca",
+  "native_sha256": "6cb45ac130a980e16113dca952be13fa59602d5a73cdb85869716a4b76b9db08",
+  "targeting_adapter_sha256": "93e584c9f3347609c5087382304154cfc5f843212f156e9bc75f9032053da65a",
+  "helper_executable_sections_unchanged": true,
+  "gui_patch_reproduced_from_original": true,
+  "unsupported_gui_patch_rejected": true,
+  "native_binary_preserved": true,
+  "rain_client_files_modified": false,
+  "runtime_behavior": {
+    "L3": "single horizontal turn to nearest living rendered large monster",
+    "held_L3": "no continuous tracking",
+    "no_target": "current direction preserved",
+    "behind_player_fallback": false,
+    "R3_and_LB": "unchanged"
+  },
+  "automated": {
+    "gui": {
+      "checks": 84,
+      "failures": 0,
+      "dpi": 96,
+      "directwrite": true,
+      "nonclient_disabled": true,
+      "game_attachment_tested": false
+    },
+    "target_math": "passed: directions, filters, invalid coordinates, all 65536 HP/button values, press/focus guards",
+    "exact_packaged_native_integration": "passed: L3 aim, filtering, hold/no-target/focus, other inputs including LT/RT bytes, profiles, FPS snapshot delegation and disable",
+    "bad_native_hash_rejected": true,
+    "bad_engine_guard_rejected": true,
+    "bad_monster_layout_guard_rejected": true,
+    "earlier_live_test_addon_reuse": "passed in previous isolated fixture",
+    "addon_source_build": "passed"
+  },
+  "live_validation": {
+    "date": "2026-10-11",
+    "targeting_test": "user confirmed L3 targeting near Farunokku",
+    "automatic_START_injection": "user confirmed targeting after START in updated Helper",
+    "target_events_in_runtime_journal": [
+      "Farunokku (114)",
+      "Hypnocatrice (74)",
+      "Rathian (1)"
+    ],
+    "existing_input_features": "LT/L2 and RT/R2 separately and simultaneously confirmed in preceding trigger test",
+    "protected_files": "installer verified Rain client, profiles, native core and Frontier Plus hashes unchanged"
+  },
+  "source_provenance": {
+    "adapter": "included",
+    "GUI": "guarded string-only patch of public 1.0.0 EXE",
+    "FPS_sync_native": "supplied binary; updated source unavailable",
+    "legacy_source": "earlier 1.0.0 source, not a reproduction of updated FPS-sync DLL"
+  }
+}

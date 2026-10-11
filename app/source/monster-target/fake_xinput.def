@@ -1,0 +1,3 @@
+EXPORTS
+XInputGetState = XInputGetState@8
+SetTestPad = SetTestPad@20

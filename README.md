@@ -1,65 +1,99 @@
 # Frontier Helper
 
-Native camera helper for Monster Hunter Frontier Rain HD. Version **1.0.0**.
+Native camera helper for Monster Hunter Frontier Rain HD. Version **1.0.1**.
 
 ![Frontier Helper](app/preview.png)
 
-[Download Frontier Helper 1.0.0](https://github.com/Tychkaneg/Frontier-helper/releases/download/v1.0.0/Frontier-Helper-1.0.0.zip).
-Close Rain and Helper before updating, extract the ZIP and run
-`FrontierHelper.exe`. Keep `FrontierOrbitRain08.dll` next to it and preserve
-your existing `setups` folder. Open Rain normally, enter the city, then click
-**START**.
+[Download Frontier Helper 1.0.1](https://github.com/Tychkaneg/Frontier-helper/releases/download/v1.0.1/Frontier-Helper-1.0.1.zip).
 
-## Xbox LT / RT support
+Close Rain and Helper before updating, extract the ZIP and keep your existing
+`setups` folder. Run `FrontierHelper.exe`, open Rain normally and click **START**
+in the city. Keep both DLLs beside the EXE:
+
+- `FrontierTargetL3Mod.dll`: injected L3 targeting adapter.
+- `FrontierOrbitRain08.dll`: the matched camera core with LT/RT and FPS snapshots.
+
+## L3 monster targeting
+
+Press **L3** to turn the camera horizontally toward the nearest living,
+rendered large monster. Each press turns once; holding L3 does not track it.
+If there is no valid target, the camera keeps its current direction.
+**L3 no longer recenters behind the hunter.** R3 and LB/item selection keep
+their existing behavior. Right-stick orbit controls, profiles and collision
+handling remain in the camera core. F8 toggles the orbit camera.
+
+Targeting runs while the camera is enabled, Rain has focus and the current
+camera/player scene is valid. Holding L3 when focus returns does not count as
+a new press. The explicit Recenter button in Helper retains its existing action.
+
+START injects the adapter into the running game. The adapter loads the matched
+camera core and forwards the control protocol and FPS camera snapshot export.
+No files are installed or changed in the Rain Client folder.
+
+## Xbox LT / RT and FPS support
 
 LT maps to Rain's existing L2 binding, and RT maps to R2. The triggers work
 independently and together. Helper reads separate XInput trigger values and
 updates the DirectInput joystick state returned inside the running game.
-It reads the existing controller bindings and priority without installing
-or modifying files in the Rain Client folder.
+It reads the existing controller bindings and priority without modifying
+Rain configuration files. Connect the controller before clicking START.
 
-Connect the controller before clicking START. Trigger translation stays
-active while Helper is connected and Rain has focus. STOP or F8 can disable
-the orbit camera while the input fix remains connected; closing Helper or
-losing the connection stops translation. Pressed means above 30 out of 255.
+Trigger translation stays active while Helper is connected and Rain has focus.
+STOP or F8 can disable the orbit camera while the input fix remains connected;
+closing Helper or losing the connection stops translation. Pressed means above
+30 out of 255.
 
-Use the matched EXE and DLL from this release. The local control protocol is
-now version 2, so restart Rain when updating from an older injected module.
+This release includes the supplied FPS-sync native DLL without changing its
+bytes. The adapter keeps its `FrontierOrbitRain08.dll` module name and forwards
+its 60-byte `FrontierGetCameraSnapshot` result. A compatible Frontier Plus build
+is required to consume those snapshots; Helper does not install Plus.
 
 ## Rain update compatibility
 
-Compatibility is checked against the loaded engine in both Helper and the
-injected camera module; the file SHA256 is recorded for diagnostics.
-Updates are accepted automatically when the known camera/collision layout
-passes 13 exact code and address-operand checks plus 9 mapped-data checks.
-The original camera import, process identity and local control-channel owner
-are also checked before enabling the camera.
+Helper and the camera core check the loaded engine against 13 exact code and
+address-operand checks plus 9 mapped-data checks. Targeting adds four exact
+monster-layout code checks. Changed checked instructions or addresses are
+rejected. Automatic checks accept matching layouts; they do not relocate hooks
+or adapt arbitrary engine updates.
 
-Changes to checked code or addresses are rejected. Automatic compatibility
-does not relocate hooks or adapt arbitrary engine changes.
+The adapter requires the exact native DLL shipped in this release (SHA256
+`6cb45ac130a980e16113dca952be13fa59602d5a73cdb85869716a4b76b9db08`).
+Use all three matched runtime files and restart Rain when updating an injected
+module. Other DLL versions are rejected before the adapter installs its hook.
 
-## Build and verification
+## Source and build
 
-Use Zig 0.13.0 on Windows, with `zig` on PATH or pass its location:
+The new targeting adapter is in [app/source/monster-target](app/source/monster-target).
+Use Zig 0.13.0 on Windows:
 
 ```powershell
 cd app
 .\build.ps1 -Zig 'C:\Tools\zig\zig.exe'
-.\test-compat.ps1 -Zig 'C:\Tools\zig\zig.exe'
-# Optional: real DirectInput trigger tests with an Xbox controller connected
-.\test-compat.ps1 -Zig 'C:\Tools\zig\zig.exe' -ControllerTests
+.\test-monster-target.ps1 -Zig 'C:\Tools\zig\zig.exe'
 ```
 
-The build produces both the application and its Rain camera DLL.
-Tests cover compatibility acceptance/rejection and camera-core geometry.
-Optional `-GamePid <pid>` adds a read-only check of a running Rain engine.
-Controller tests cover pre-existing ANSI/Unicode DirectInput devices,
-separate/simultaneous triggers, threshold, release, other-button preservation,
-connection gating and hook restoration.
+`build.ps1` builds only the targeting adapter. The supplied FPS-sync camera
+core is included as a binary: its updated source was not available. The other
+source directories are the earlier 1.0.0 implementation. `build-legacy.ps1`
+builds those earlier sources into `legacy-build-output`, without overwriting
+the current release. Its output does not reproduce the FPS-sync core.
 
-On 2026-10-11 the user confirmed LT/L2 and RT/R2 worked separately and
-together in Rain HD `20261009170842_c176749` using the preceding 0.10.2 test
-build. Its journal recorded patched 80-byte joystick states and active
-camera scenes. Version 1.0.0 retains that input and camera implementation.
-See [trigger verification](app/verification/triggers-1.0.0.json) and the
-[previous compatibility verification](app/verification/compatibility-0.10.1.json).
+The 1.0.1 EXE changes only version/control text and the injected DLL filename.
+[patch_helper_1_0_1.py](app/source/monster-target/patch_helper_1_0_1.py) reproduces
+it from the exact EXE in the public v1.0.0 ZIP, verifies the input hash and
+requires all executable sections to remain byte-identical.
+
+## Verification
+
+The package passed the 84-check GUI self-test at 96 DPI. Integration tests load
+the exact packaged camera core and adapter in an isolated engine fixture.
+They cover L3 targeting, small/dead filtering, press/hold/focus behavior,
+no-target behavior, other buttons and both trigger bytes, profiles,
+FPS snapshot forwarding, camera disable, and changed-native/engine rejection.
+Fixture DLLs are kept outside the runtime package.
+
+On 2026-10-11 the user confirmed L3 targeting in Rain, then confirmed it again
+after START in the updated Helper. Runtime logs recorded targets for Farunokku,
+Hypnocatrice and Rathian. This is separate from the automated fixture checks.
+See [1.0.1 verification](app/verification/monster-target-1.0.1.json) and
+[previous trigger verification](app/verification/triggers-1.0.0.json).

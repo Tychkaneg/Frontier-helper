@@ -10,3 +10,8 @@ app/qa-*.txt
 
 app/compatibility-test-output/
 app/*.lib
+app/legacy-build-output/
+app/monster-target-test-output/
+app/monster-target-adapter-*.log
+app/verification-*.json
+app/source/monster-target/__pycache__/
