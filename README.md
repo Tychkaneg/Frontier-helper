@@ -108,3 +108,7 @@ after START in the updated Helper. Runtime logs recorded targets for Farunokku,
 Hypnocatrice and Rathian. This is separate from the automated fixture checks.
 See [1.0.1 verification](app/verification/monster-target-1.0.1.json) and
 [previous trigger verification](app/verification/triggers-1.0.0.json).
+
+## License
+
+Licensed under the [MIT License](LICENSE).
