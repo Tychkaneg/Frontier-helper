@@ -30,7 +30,7 @@ START injects the adapter into the running game. The adapter loads the matched
 camera core and forwards the control protocol and FPS camera snapshot export.
 No files are installed or changed in the Rain Client folder.
 
-## Xbox LT / RT and FPS support
+## Xbox LT / RT support
 
 LT maps to Rain's existing L2 binding, and RT maps to R2. The triggers work
 independently and together. Helper reads separate XInput trigger values and
@@ -43,10 +43,21 @@ STOP or F8 can disable the orbit camera while the input fix remains connected;
 closing Helper or losing the connection stops translation. Pressed means above
 30 out of 255.
 
-This release includes the supplied FPS-sync native DLL without changing its
-bytes. The adapter keeps its `FrontierOrbitRain08.dll` module name and forwards
-its 60-byte `FrontierGetCameraSnapshot` result. A compatible Frontier Plus build
-is required to consume those snapshots; Helper does not install Plus.
+## MHFZ Plus compatibility
+
+Frontier Helper 1.0.1 supports integration with
+[MHFZ Plus](https://github.com/Sushii-dev/mhfz-plus), the frame interpolation
+mod for higher display FPS in Monster Hunter Frontier Z.
+
+Camera/FPS synchronization requires a Plus build that supports Helper's
+camera snapshot bridge. Helper 1.0.1 preserves the supplied FPS-sync camera
+core and forwards its snapshots while keeping L3 monster targeting, LT/RT
+support and your camera profiles.
+
+Install and configure MHFZ Plus separately, launch Rain through your normal
+Plus workflow, then click **START** in Helper. Keep both Helper DLLs beside
+the EXE. Helper does not install Plus; snapshot support depends on the Plus
+build you use.
 
 ## Rain update compatibility
 
