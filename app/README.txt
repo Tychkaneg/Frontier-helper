@@ -1,8 +1,9 @@
-FRONTIER HELPER 0.10.1 — RAIN EDITION
+FRONTIER HELPER 1.0.0 - RAIN EDITION
 
 Run FrontierHelper.exe. No installation is required.
 Keep FrontierOrbitRain08.dll next to the executable.
 
+Close Rain and Helper before updating, then keep your existing setups folder.
 Open Rain HD normally and enter the city. Click START to connect.
 STOP restores the stock camera. Closing Helper also disables its camera.
 RAIN UPDATE COMPATIBILITY
@@ -34,7 +35,7 @@ The setups folder contains your profiles; it is portable with the app.
 FILES
 Select the Rain executable when automatic detection needs a specific path.
 Open the profiles folder, view/export the connection log, choose Auto or
-Gamepad 1–4, and use Recenter for the connected camera.
+Gamepad 1-4, and use Recenter for the connected camera.
 F8 toggles the camera in game. L3 recenters it.
 
 KEYBOARD
@@ -53,11 +54,30 @@ Compatibility tests passed for a valid engine layout and rejection of
 changed code/address operands, non-executable code, inaccessible data and
 an incorrect engine base. Camera-core tests include 5,000 geometry cases.
 Live checks passed for engine verification, injection, channel ownership,
-settings, enable/status/disable. The user confirmed the updated camera
-works in Rain; the attach journal also recorded active camera/settings.
-The UI/DPI results above are from 0.10.0; 0.10.1 changes compatibility and
-the displayed version, with the existing UI controls retained.
+settings, enable/status/disable. The user confirmed the 0.10.1 compatibility update worked in Rain;
+its attach journal also recorded active camera/settings.
+The UI/DPI results above are from 0.10.0; 1.0.0 adds runtime trigger handling and protocol-v2 diagnostics,
+with the existing UI controls retained.
 
 Source, build.ps1 and test-compat.ps1 are available in the GitHub repository.
 The portable ZIP includes runtime files, this README and a hash manifest.
 Your existing setups folder can be kept when updating the EXE and DLL.
+
+LT / RT SUPPORT
+LT is mapped to the existing L2 binding, and RT to the existing R2 binding.
+The Helper DLL reads the controller bindings and priority from Rain's files.
+It modifies only returned DirectInput joystick states inside the running
+process. Nothing is installed in the Rain Client folder and no game or
+configuration files are modified. Connect the controller before START.
+The fix uses separate XInput trigger values (pressed above 30 out of 255).
+It runs while Helper is connected/configured and Rain has focus; F8/STOP
+can disable the orbit camera while the trigger fix remains connected.
+Closing Helper or losing its control link stops the trigger translation.
+Supports DirectInput8 ANSI/Unicode and standard joystick state layouts.
+Runtime tests passed on pre-existing DirectInput devices, including both
+triggers together, release, focus/connection gating and hook restoration.
+On 2026-10-11 the user confirmed the preceding 0.10.2 test build
+handled LT/L2 and RT/R2 in Rain; 1.0.0 retains that implementation,
+including separate and simultaneous presses. The attach journal recorded
+patched 80-byte joystick states and active camera scenes. Client DLL and
+controller configuration hashes remained unchanged.

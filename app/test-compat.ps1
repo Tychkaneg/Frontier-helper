@@ -1,4 +1,4 @@
-param([string]$Zig='zig', [uint32]$GamePid=0)
+param([string]$Zig='zig', [uint32]$GamePid=0, [switch]$ControllerTests)
 $ErrorActionPreference='Stop'
 $taskTestRoot=$PSScriptRoot
 $taskTestOutput=Join-Path $taskTestRoot 'compatibility-test-output'
@@ -18,4 +18,12 @@ if($LASTEXITCODE -ne 0){throw 'Camera-core tests failed'}
 if($GamePid){
     & $taskCompatExe $GamePid
     if($LASTEXITCODE -ne 0){throw 'Running Rain engine compatibility check failed'}
+}
+
+if($ControllerTests){
+    $taskTriggerExe=Join-Path $taskTestOutput 'test-triggers.exe'
+    & $Zig cc -target x86-windows-gnu -O2 -UNDEBUG -Wall -Wextra -Werror -Wno-unused-function (Join-Path $taskTestRoot 'source\control-core\tests\test_triggers.c') (Join-Path $taskTestRoot 'source\control-core\src\trigger_win.c') -ldinput8 -ldxguid -luser32 -o $taskTriggerExe
+    if($LASTEXITCODE -ne 0){throw 'Trigger test build failed'}
+    & $taskTriggerExe
+    if($LASTEXITCODE -ne 0){throw 'Trigger tests failed (requires a connected Xbox/XInput controller)'}
 }

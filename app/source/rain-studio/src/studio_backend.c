@@ -233,11 +233,15 @@ static int connect_game(Connection *c,DWORD requested,const wchar_t *selected,co
   studio_log(c->ui,2,L"[error] Core initialization rejected the engine (%ld).",reply.engine_status);return 0;
  }
  studio_log(c->ui,0,L"[attach 5/5] Engine status 2; ready for Settings and Enable.");
- publish(c,&reply,1);studio_log(c->ui,1,L"[channel] Connected / protocol v1 / local process verified.");return 1;
+ publish(c,&reply,1);studio_log(c->ui,1,L"[channel] Connected / protocol v2 / local process verified.");
+ if(reply.input_status>0)studio_log(c->ui,1,L"[input] LT/L2 and RT/R2 runtime fix ready. Rain files unchanged.");
+ else if(reply.input_status<0)studio_log(c->ui,2,L"[input] Trigger fix unavailable (%ld). Camera remains available.",(long)reply.input_status);
+ else studio_log(c->ui,0,L"[input] Trigger fix initializing; waiting for controller reads.");
+ return 1;
 }
 static DWORD WINAPI worker(void *opaque) {
  StudioBackend *ui=opaque;Connection c={0};c.ui=ui;
- ULONGLONG last_settings=0,last_status=0;uint32_t previous_scene=99;uint64_t last_applied=0;
+ ULONGLONG last_settings=0,last_status=0;uint32_t previous_scene=99;uint64_t last_applied=0;int input_reported=0;
  for(;;) {
   CameraSettings settings;enum StudioAction action;uint64_t serial;DWORD requested;int flush;
   wchar_t selected[MAX_PATH],core[MAX_PATH];
@@ -274,6 +278,9 @@ static DWORD WINAPI worker(void *opaque) {
     ok=send(&c,CONTROL_STATUS,NULL,&reply)&&reply.error==CONTROL_OK;last_status=now;
     if(ok) {
      publish(&c,&reply,1);
+     if(!input_reported&&reply.input_applied){
+      studio_log(ui,1,L"[input] Rain controller reads patched / LT=L2 / RT=R2 / %lu-byte state.",reply.input_bytes);input_reported=1;
+     }
      if(reply.scene!=previous_scene) {
       const wchar_t *scenes[]={L"disabled",L"waiting for gameplay",L"waiting for focus",
        L"settling after transition",L"waiting for reference camera",L"geometry fallback",L"active"};
@@ -294,7 +301,7 @@ static DWORD WINAPI worker(void *opaque) {
 int studio_backend_start(StudioBackend *b,HWND window,const wchar_t *core) {
  memset(b,0,sizeof(*b));InitializeSRWLock(&b->lock);InitializeSRWLock(&b->log_lock);log_path(b);b->settings=camera_defaults();
  b->window=window;wcscpy(b->core_path,core);b->settings_serial=1;
- studio_log(b,0,L"[version] Frontier Helper 0.10.1 / Compact GUI / Rain core from Studio 0.8.1.");
+ studio_log(b,0,L"[version] Frontier Helper 1.0.0 / Compact GUI / Rain core from Studio 0.8.1.");
  studio_log(b,0,*b->log_path?L"[log] Persistent attach journal enabled.":L"[log] Persistent journal could not be created.");
  b->thread=CreateThread(NULL,0,worker,b,0,NULL);return b->thread!=NULL;
 }

@@ -46,6 +46,9 @@ static void reply_snapshot(ControlBridge *b,ControlReply *r,uint32_t error) {
  r->requested_radius=b->telemetry.requested_radius;r->actual_radius=b->telemetry.actual_radius;
  r->reference_radius=b->telemetry.reference_radius;r->reference_height=b->telemetry.reference_height;
  r->yaw=b->telemetry.yaw;r->pitch=b->telemetry.pitch;
+ r->input_status=atomic_read(&b->triggers.status);r->input_calls=(uint32_t)atomic_read(&b->triggers.calls);
+ r->input_applied=(uint32_t)atomic_read(&b->triggers.applied);r->input_bytes=(uint32_t)atomic_read(&b->triggers.bytes);
+ r->trigger_lt=(uint32_t)atomic_read(&b->triggers.left);r->trigger_rt=(uint32_t)atomic_read(&b->triggers.right);
  ReleaseSRWLockExclusive(&b->gate);
 }
 /* No pipe I/O takes the snapshot lock. Timeout cancels the exact pending operation. */

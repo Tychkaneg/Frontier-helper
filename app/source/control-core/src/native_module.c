@@ -6,6 +6,7 @@
 #include <stdio.h>
 #ifdef FRONTIER_RAIN
 #include "../../src/engine_compat.h"
+#include "trigger_win.c"
 #else
 #include "../../src/engine_guards.h"
 #endif
@@ -155,6 +156,15 @@ __declspec(dllexport) DWORD WINAPI OrbitControlVersion(void *unused) {(void)unus
 __declspec(dllexport) DWORD WINAPI OrbitStatus(void *unused) {
  (void)unused;return (DWORD)InterlockedCompareExchange(&bridge.engine_status,0,0);
 }
+#ifdef FRONTIER_RAIN
+static int trigger_connection(void *opaque,int *index) {
+ ControlBridge *b=opaque;ControlSnapshot s;DWORD foreground=0;
+ GetWindowThreadProcessId(GetForegroundWindow(),&foreground);
+ if(foreground!=b->pid||!control_snapshot(b,&s)||!s.connected||!s.configured||
+  InterlockedCompareExchange(&b->engine_status,0,0)!=2)return 0;
+ *index=s.settings.gamepad_index;return 1;
+}
+#endif
 static DWORD WINAPI initialize(void *unused) {
  (void)unused;camera_core_init(&camera);snapshot.settings=camera_defaults();
  if(!control_start(&bridge)){InterlockedExchange(&bridge.engine_status,-11);return 0;}
@@ -184,6 +194,12 @@ static DWORD WINAPI initialize(void *unused) {
  if(previous!=(void*)original){InterlockedExchange(&bridge.engine_status,-8);return 0;}
  if(!restored){InterlockedExchange(&bridge.engine_status,-9);return 0;}
  InterlockedExchange(&bridge.engine_status,2);
+#ifdef FRONTIER_RAIN
+ wchar_t executable[MAX_PATH];unsigned left=0,right=0;GUID preferred={0};
+ if(GetModuleFileNameW(NULL,executable,MAX_PATH)&&frontier_trigger_bindings(executable,&left,&right,&preferred))
+  frontier_trigger_install(read_pad,trigger_connection,&bridge,left,right,&preferred,&bridge.triggers);
+ else InterlockedExchange(&bridge.triggers.status,-2);
+#endif
  int was_down=0;
  for(;;) {
   DWORD foreground=0;GetWindowThreadProcessId(GetForegroundWindow(),&foreground);

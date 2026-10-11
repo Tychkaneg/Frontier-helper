@@ -1,0 +1,51 @@
+{
+  "version": "1.0.0",
+  "date": "2026-10-11",
+  "scope": "runtime LT/L2 and RT/R2 translation",
+  "rain_client_files_modified": false,
+  "protocol": 2,
+  "tests": {
+    "real_directinput_existing_objects_ansi_unicode": "pass",
+    "lt_only_rt_only_both": "pass",
+    "threshold_and_release": "pass",
+    "controller_missing_and_context_gate": "pass",
+    "failed_read_passthrough": "pass",
+    "standard_80_and_272_byte_states": "pass",
+    "preserve_other_buttons": "pass",
+    "restore_vtable": "pass",
+    "camera_geometry_5000_cases": "pass",
+    "pipe_protocol_v2_and_timeout": "pass"
+  },
+  "in_game_acceptance": "user_confirmed_pass",
+  "in_game_evidence": {
+    "date": "2026-10-11",
+    "client_engine": "20261009170842_c176749",
+    "user_confirmation": "все работает",
+    "asked_to_verify": [
+      "LT/L2 separately",
+      "RT/R2 separately",
+      "LT and RT together"
+    ],
+    "runtime_log": "attach-20261011-023752-8108.txt",
+    "observed": [
+      "protocol v2 connected",
+      "Rain controller reads patched, 80-byte state",
+      "camera scene active"
+    ],
+    "tested_build": "0.10.2-test"
+  },
+  "unchanged_client_sha256": {
+    "client.dll": "69b0c000f550d95e7f8d229747be5d179dfee17bc8ceab356e626a27172865f7",
+    "keyconfig.cfg": "a70d298a0130718f73cc7f4fadcf03b3bfc292cbe3790fbc1b0ef609767e6673"
+  },
+  "release_changes": "Version labels and initialization log wording; trigger and camera implementation unchanged from user-accepted build.",
+  "release_validation": {
+    "version": "1.0.0",
+    "warning_as_error_build": "pass",
+    "compatibility_fixtures": "pass",
+    "camera_geometry_5000_cases": "pass",
+    "real_directinput_trigger_tests": "pass",
+    "gui_96_dpi_checks": 84,
+    "gui_96_dpi_failures": 0
+  }
+}

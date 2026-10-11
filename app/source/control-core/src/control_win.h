@@ -3,6 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "control_protocol.h"
+#include "trigger_win.h"
 typedef struct {
  CameraSettings settings;
  uint64_t revision,reset_serial;
@@ -19,6 +20,7 @@ typedef struct {
  SRWLOCK gate;
  ControlSnapshot pending;
  ControlTelemetry telemetry;
+ FrontierInputStats triggers;
  volatile LONG enabled,epoch,engine_status,render_busy;
  uint64_t created,last_beat;
  DWORD pid;
